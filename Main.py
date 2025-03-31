@@ -7,7 +7,7 @@ import tempfile
 def process_frame(frame):
     """Riduce la risoluzione del frame e lo passa a Ollama per l'analisi."""
     # Ridimensiona il frame per ridurre la quantità di dati
-    resized_frame = cv2.resize(frame, (640, 480))
+    resized_frame = cv2.resize(frame, (1920, 1280))
     
     # Salva il frame in un file temporaneo (di solito in una directory veloce)
     with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
@@ -21,11 +21,16 @@ def process_frame(frame):
         start_time = time.time()
         
         # Chiamata al modello Llama3.2 Vision tramite l'API Python di Ollama
-        response = ollama.chat(model="llama3.2-vision:latest", messages=[{
+        response = ollama.chat(model="llama3.2-vision:latest", messages=[
+            {
+            "role": "system",
+            "content": "You are an expert in photography and art. Analyze the images by describing the composition, lighting, artistic style, and meaning. But you have to give a fast response"
+            },
+            {
             "role": "user",
             "content": "Describe this image.",
-            "images": [image_filename]
-        }])
+            "images": [image_filename]}
+        ])
         
         elapsed_time = time.time() - start_time
     except Exception as e:
